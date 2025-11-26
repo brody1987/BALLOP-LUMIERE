@@ -49,17 +49,16 @@
         env: {
           // Automatically set PUBLIC_URL to the current path (e.g., "/BALLOP-LUMIERE") or empty if root
           PUBLIC_URL: window.location.hostname.includes('github.io') 
-            ? window.location.pathname.replace(/\/$/, "") // Remove trailing slash
+            ? window.location.pathname.replace(/\/$/, "") 
             : ""
         }
       };
-      console.log("Environment Configured:", window.process.env.PUBLIC_URL);
     </script>
 
     <!-- Babel for in-browser compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Import Map -->
+    <!-- Import Map (Clean React 18 Setup) -->
     <script type="importmap">
 {
   "imports": {
@@ -264,7 +263,7 @@
                 setStoredKey(val);
                 setApiKeyState(val);
                 setShowKeyModal(false);
-                setError(null); // Clear errors when a new key is saved
+                setError(null);
             };
 
             const handleGenerate = async () => {
@@ -296,21 +295,19 @@
                             setProgress(((i + 1) / total) * 100);
                         } catch (err) {
                             console.error(err);
-                            // Detect API Key errors specifically
                             const msg = err.message || "";
                             if (msg.includes("403") || msg.toLowerCase().includes("key") || msg.includes("400")) {
                                 throw new Error("Invalid API Key");
                             }
-                            // Continue others on non-fatal error
                         }
                     }
                 } catch (err) {
                     const msg = err.message || "Something went wrong.";
                     if (msg.includes("Invalid API Key")) {
                         setError("Your API Key is invalid or expired. Please check your billing or key.");
-                        setStoredKey(""); // Clear invalid key
+                        setStoredKey(""); 
                         setApiKeyState("");
-                        setShowKeyModal(true); // Re-open modal
+                        setShowKeyModal(true);
                     } else {
                         setError(msg);
                     }
