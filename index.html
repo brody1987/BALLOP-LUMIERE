@@ -43,34 +43,21 @@
       ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
     </style>
 
-    <!-- Polyfill for process.env.PUBLIC_URL in Browser -->
-    <script>
-      window.process = {
-        env: {
-          // Automatically set PUBLIC_URL to the current path (e.g., "/BALLOP-LUMIERE") or empty if root
-          PUBLIC_URL: window.location.hostname.includes('github.io') 
-            ? window.location.pathname.replace(/\/$/, "") 
-            : ""
-        }
-      };
-    </script>
-
-    <!-- Babel for in-browser compilation -->
+    <!-- Babel for in-browser JSX compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Import Map (Clean React 18 Setup) -->
+    <!-- Import Map: Explicitly use React 18 from esm.sh to avoid version conflicts -->
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react-router-dom": "https://esm.sh/react-router-dom@6.22.0?external=react,react-dom",
-    "@google/genai": "https://esm.sh/@google/genai",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom": "https://esm.sh/react-dom@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "react-router-dom": "https://esm.sh/react-router-dom@6.22.0?external=react,react-dom",
+        "@google/genai": "https://esm.sh/@google/genai"
+      }
+    }
+    </script>
 </head>
 <body>
     <div id="root"></div>
@@ -82,7 +69,7 @@
         import { GoogleGenAI } from "@google/genai";
 
         // ==========================================
-        // 1. CONSTANTS & TYPES
+        // 1. CONSTANTS
         // ==========================================
         const FashionStyle = {
             MINIMALIST: "Minimalist Studio, clean background, soft lighting",
@@ -106,8 +93,10 @@
         ];
 
         // ==========================================
-        // 2. SERVICE
+        // 2. LOGIC & SERVICES
         // ==========================================
+        
+        // Simple local storage for API Key
         const getStoredKey = () => localStorage.getItem("gemini_api_key");
         const setStoredKey = (key) => {
             if (key) localStorage.setItem("gemini_api_key", key);
@@ -115,8 +104,7 @@
         };
 
         const generateFashionImage = async (apiKey, portraitBase64, productBase64s, style, poseDescription) => {
-            if (!apiKey) throw new Error("API Key is missing");
-            
+            // Explicitly pass API Key to the constructor
             const ai = new GoogleGenAI({ apiKey: apiKey });
             
             const cleanPortrait = portraitBase64.includes(',') ? portraitBase64.split(',')[1] : portraitBase64;
@@ -325,6 +313,11 @@
                 document.body.removeChild(link);
             };
 
+            // Calculate current basename dynamically for GitHub Pages
+            const basename = window.location.hostname.includes('github.io') 
+                ? window.location.pathname.replace(/\/$/, "") 
+                : "";
+
             return (
                 <div className="min-h-screen bg-brand-black text-brand-cream font-sans selection:bg-brand-gold selection:text-black">
                     
@@ -520,9 +513,13 @@
 
         const root = createRoot(document.getElementById('root'));
         
-        // Wrap with BrowserRouter and use the polyfilled process.env.PUBLIC_URL
+        // Calculate dynamic basename for GitHub Pages support
+        const basename = window.location.hostname.includes('github.io') 
+            ? window.location.pathname.replace(/\/$/, "") 
+            : "";
+
         root.render(
-          <BrowserRouter basename={process.env.PUBLIC_URL}>
+          <BrowserRouter basename={basename}>
             <App />
           </BrowserRouter>
         );
