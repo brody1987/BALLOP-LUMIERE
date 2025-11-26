@@ -33,15 +33,7 @@ const App: React.FC = () => {
 
   // Initial check for API Key
   useEffect(() => {
-    const checkKey = async () => {
-      try {
-        const ready = await hasApiKey();
-        setApiKeyReady(ready);
-      } catch (e) {
-        console.warn("API Key check failed initially", e);
-      }
-    };
-    checkKey();
+    hasApiKey().then(setApiKeyReady);
   }, []);
 
   const handleConnect = async () => {
